@@ -37,6 +37,17 @@ if(MSVC)
 endif()
 
 
+set(ARTK_CXX_STANDARD 11)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD ${ARTK_CXX_STANDARD})
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+elseif(CMAKE_CXX_STANDARD LESS ARTK_CXX_STANDARD)
+  message(FATAL_ERROR "CMake CXX standard (${CMAKE_CXX_STANDARD}) is less than the required standard (${ARTK_CXX_STANDARD})")
+endif()
+set(ARTK_CXX_FEATURE cxx_std_${CMAKE_CXX_STANDARD})
+message(STATUS "Using C++ standard: ${CMAKE_CXX_STANDARD}")
+
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
@@ -64,6 +75,7 @@ target_compile_definitions(ARToolKitPlus PRIVATE ${ARTK_COMPILE_DEFINITIONS})
 target_include_directories(ARToolKitPlus PUBLIC
   "$<BUILD_INTERFACE:${AR_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/>")
+target_compile_features(ARToolKitPlus PUBLIC ${ARTK_CXX_FEATURE})
 
 if(ARTK_BUILD_EXAMPLES)
     add_subdirectory(bin/)
