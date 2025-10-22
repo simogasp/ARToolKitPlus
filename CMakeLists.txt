@@ -11,7 +11,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 option(ARTK_BUILD_EXAMPLES "Build sample programs and utilies" ON)
 option(ARTK_USE_BOOST "Compile with boost (OpenCV calibration file support)" OFF)
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ARTK_ENABLE_WARNINGS_AS_ERRORS "Enable warnings as errors" OFF)
 
 message(STATUS "ARToolKitPlus version: ${PROJECT_VERSION}")
