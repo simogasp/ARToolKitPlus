@@ -97,6 +97,10 @@ target_include_directories(ARToolKitPlus PUBLIC
   "$<INSTALL_INTERFACE:include/>")
 target_compile_features(ARToolKitPlus PUBLIC ${ARTK_CXX_FEATURE})
 
+set_target_properties(ARToolKitPlus PROPERTIES
+  DEBUG_POSTFIX "d"
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION})
 if(ARTK_BUILD_EXAMPLES)
     add_subdirectory(bin/)
 endif(ARTK_BUILD_EXAMPLES)
