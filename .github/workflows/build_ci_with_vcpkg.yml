@@ -62,7 +62,7 @@ jobs:
         configurePreset: 'vcpkg-release'
         buildPreset: 'vcpkg-release'
         buildPresetAdditionalArgs: "['-t install']"
-#        testPreset: 'vcpkg-release'
+        testPreset: 'vcpkg-release'
 
     - name: Build (Debug)
       uses: lukka/run-cmake@v10
@@ -70,7 +70,7 @@ jobs:
         configurePreset: 'vcpkg-debug'
         buildPreset: 'vcpkg-debug'
         buildPresetAdditionalArgs: "['-t install']"
-#        testPreset: 'vcpkg-debug'
+        testPreset: 'vcpkg-debug'
 
     # test the build as 3rd party library
     - name: Test as 3rd party library
