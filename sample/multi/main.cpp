@@ -29,8 +29,10 @@
 using ARToolKitPlus::TrackerMultiMarker;
 
 int main(int argc, char** argv) {
-    const int width = 320, height = 240, bpp = 1;
-    size_t numPixels = width * height * bpp;
+    const int width = 320;
+    const int height = 240;
+    const int bpp = 1;
+    const size_t numPixels = width * height * bpp;
     size_t numBytesRead;
     const char *fName = "data/markerboard_480-499.raw";
     unsigned char cameraBuffer[numPixels];
