@@ -5,19 +5,32 @@ project(ARToolKitPlus
         DESCRIPTION "ARToolKitPlus - A C++ based Augmented Reality Tracking Library"
         )
 
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(ARTK_IS_MAIN_PROJECT ON)
+    set(ARTK_INSTALL_DEFAULT ON)
+    set(ARTK_BUILD_EXAMPLES_DEFAULT ON)
+else()
+    set(ARTK_IS_MAIN_PROJECT OFF)
+    set(ARTK_INSTALL_DEFAULT OFF)
+    set(ARTK_BUILD_EXAMPLES_DEFAULT OFF)
+endif()
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
-option(ARTK_BUILD_EXAMPLES "Build sample programs and utilies" ON)
+option(ARTK_BUILD_EXAMPLES "Build sample programs and utilies" ${ARTK_BUILD_EXAMPLES_DEFAULT})
 option(ARTK_USE_BOOST "Compile with boost (OpenCV calibration file support)" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ARTK_ENABLE_WARNINGS_AS_ERRORS "Enable warnings as errors" OFF)
+option(ARTK_INSTALL "Install ARToolKitPlus library" ${ARTK_INSTALL_DEFAULT})
 
+message(STATUS "ARToolKitPlus is main project: ${ARTK_IS_MAIN_PROJECT}")
 message(STATUS "ARToolKitPlus version: ${PROJECT_VERSION}")
 message(STATUS "Build shared libraries: ${BUILD_SHARED_LIBS}")
 message(STATUS "Build examples: ${ARTK_BUILD_EXAMPLES}")
 message(STATUS "Treat warnings as errors: ${ARTK_ENABLE_WARNINGS_AS_ERRORS}")
+message(STATUS "Install the library: ${ARTK_INSTALL}")
 
 # compile options for all targets depending on the compiler and the system
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
