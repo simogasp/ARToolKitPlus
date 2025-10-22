@@ -13,9 +13,28 @@ option(ARTK_BUILD_EXAMPLES "Build sample programs and utilies" ON)
 option(ARTK_USE_BOOST "Compile with boost (OpenCV calibration file support)" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DAR_LIBRARY)
+# compile options for all targets depending on the compiler and the system
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    set(ARTK_COMPILE_OPTIONS "-Wall;-Wextra;-pedantic;-Wno-comment;-Wshadow;-Wnon-virtual-dtor;-Wpedantic;-Wconversion;-Wmisleading-indentation;-Wsign-conversion;-Wfloat-equal")
+    if(ARTK_ENABLE_WARNINGS_AS_ERRORS)
+        list(APPEND ARTK_COMPILE_OPTIONS "-Werror")
+    endif()
+elseif(MSVC)
+    set(ARTK_COMPILE_OPTIONS "/W4;/permissive-")
+    if(ARTK_ENABLE_WARNINGS_AS_ERRORS)
+        list(APPEND ARTK_COMPILE_OPTIONS "/WX")
+    endif()
 endif()
+if(APPLE)
+    list(APPEND ARTK_COMPILE_OPTIONS "-Wno-deprecated-declarations")
+endif()
+
+# compile definitions for all targets depending on the compiler and the system
+set(ARTK_COMPILE_DEFINITIONS "")
+if(MSVC)
+    list(APPEND ARTK_COMPILE_DEFINITIONS "-DNOMINMAX;-D_USE_MATH_DEFINES;-D_CRT_SECURE_NO_WARNINGS;-DAR_LIBRARY")
+endif()
+
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
@@ -28,7 +47,6 @@ if(ARTK_USE_BOOST)
 endif(ARTK_USE_BOOST)
 
 set(AR_SOURCE_DIR ${PROJECT_SOURCE_DIR})
-include_directories(${AR_SOURCE_DIR}/include)
 
 # ARToolkitPlus core files (headers and sources)
 file(GLOB_RECURSE HEADERS_AR ${AR_SOURCE_DIR}/include/ARToolKitPlus/*.h)
@@ -40,6 +58,11 @@ file(GLOB SOURCES_AR
 	)
 
 add_library(ARToolKitPlus SHARED ${HEADERS_AR} ${SOURCES_AR})
+target_compile_options(ARToolKitPlus PRIVATE ${ARTK_COMPILE_OPTIONS})
+target_compile_definitions(ARToolKitPlus PRIVATE ${ARTK_COMPILE_DEFINITIONS})
+target_include_directories(ARToolKitPlus PUBLIC
+  "$<BUILD_INTERFACE:${AR_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/>")
 
 if(ARTK_BUILD_EXAMPLES)
     add_subdirectory(bin/)
