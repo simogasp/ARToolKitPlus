@@ -127,11 +127,67 @@ if(ARTK_BUILD_DOCS)
     endif()
 endif(ARTK_BUILD_DOCS)
 
-# make install
-install(TARGETS ARToolKitPlus 
-LIBRARY DESTINATION lib  
-ARCHIVE DESTINATION lib
-RUNTIME DESTINATION bin)
 
-install(DIRECTORY include/ DESTINATION include)
+
+if (ARTK_INSTALL)
+    include(GNUInstallDirs)
+
+    ## Automatically generated files are stored here
+    set(ARTK_generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
+    ####
+    # Installation
+    set(ARTK_config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+    set(ARTK_include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}/")
+
+    # Configuration
+    set(ARTK_version_config "${ARTK_generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
+    set(ARTK_project_config "${ARTK_generated_dir}/${PROJECT_NAME}Config.cmake")
+    set(ARTK_targets_export_name "${PROJECT_NAME}Targets")
+
+    # Include module with function 'write_basic_package_version_file'
+    include(CMakePackageConfigHelpers)
+
+    # Configure '<PROJECT-NAME>ConfigVersion.cmake'
+    write_basic_package_version_file(
+        "${ARTK_version_config}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion
+    )
+
+    # Configure '<PROJECT-NAME>Config.cmake'
+    configure_package_config_file(
+        "${CMAKE_SOURCE_DIR}/cmake/Config.cmake.in"
+        "${ARTK_project_config}"
+        INSTALL_DESTINATION "${ARTK_config_install_dir}"
+    )
+
+    # Targets:
+    install(
+        TARGETS ARToolKitPlus
+        EXPORT "${ARTK_targets_export_name}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        INCLUDES DESTINATION "${ARTK_include_install_dir}"
+    )
+message(STATUS ${HEADERS_AR})
+    # Headers:
+    install(
+        DIRECTORY "${AR_SOURCE_DIR}/include/ARToolKitPlus"
+        DESTINATION "${ARTK_include_install_dir}"
+    )
+
+
+    # Config
+    install(
+        FILES "${ARTK_project_config}" "${ARTK_version_config}"
+        DESTINATION "${ARTK_config_install_dir}"
+    )
+
+    # Config
+    install(
+        EXPORT "${ARTK_targets_export_name}"
+        NAMESPACE "${ARTK_namespace}"
+        DESTINATION "${ARTK_config_install_dir}"
+    )
+endif ()
 
