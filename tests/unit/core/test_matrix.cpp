@@ -5,6 +5,7 @@
 #include <ranges>
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 #include <memory>
 #include <random>
 #include <cstddef>
@@ -84,20 +85,41 @@ TEST(MatrixAlloc, ZeroRowsOrColsHandledGracefully) {
 // -------------------------------
 
 TEST(MatrixDup, CopiesElements) {
-    const auto src = makeMat(2, 2, {1, 2,
-                              3, 4});
-    const auto dest = makeMat(2, 2);
+    constexpr auto rows{6u};
+    constexpr auto cols{6u};
+    for(auto n_rows = 1u; n_rows < rows; ++n_rows) {
+        for (auto n_cols = 1u; n_cols < cols; ++n_cols) {
+            const auto mat_size = n_rows * n_cols;
 
-    const int ret = Matrix::dup(dest.get(), src.get());
-    EXPECT_EQ(ret, 0);
+            // create a vector of floats of mat_size elements from -(mat_size-1)/2 to +(mat_size-1)/2
+            std::vector<ARFloat> values(mat_size);
+            // use std::iota to fill the vector
+            std::iota(values.begin(), values.end(), -(static_cast<ARFloat>(mat_size) - 1) / 2);
 
-    for (int i = 0; i < 4; ++i) {
-        EXPECT_NEAR(dest->m[i], src->m[i], eps());
+            const auto src = makeMat(static_cast<int>(n_rows), static_cast<int>(n_cols), values);
+            const auto dest = makeMat(static_cast<int>(n_rows), static_cast<int>(n_cols));
+
+            const auto ret = Matrix::dup(dest.get(), src.get());
+            EXPECT_EQ(ret, 0);
+
+            for (auto i = 0u; i < mat_size; ++i) {
+                EXPECT_NEAR(dest->m[i], src->m[i], eps());
+            }
+            // test the macro ARELEM0
+            for(auto i{0u}; i < n_rows; ++i) {
+                for(auto j = 0u; j < n_cols; ++j) {
+                    EXPECT_NEAR(ARELEM0(dest.get(), i, j), ARELEM0(src.get(), i, j), eps());
+                }
+            }
+
+        }
     }
 }
 
 TEST(MatrixAllocDup, CreatesExactCopy) {
-    const auto src = makeMat(2, 3, {1, 2, 3, 4, 5, 6});
+    constexpr auto rows{2u};
+    constexpr auto cols{3u};
+    const auto src = makeMat(rows, cols, {1, 2, 3, 4, 5, 6});
     MatPtr dup(Matrix::allocDup(src.get()));
     ASSERT_NE(dup, nullptr);
 
@@ -105,6 +127,11 @@ TEST(MatrixAllocDup, CreatesExactCopy) {
     EXPECT_EQ(dup->clm, src->clm);
     for (int i = 0; i < src->row * src->clm; ++i) {
         EXPECT_NEAR(dup->m[i], src->m[i], eps());
+    }
+    for(auto i{0u}; i < rows; ++i) {
+        for(auto j = 0u; j < cols; ++j) {
+            EXPECT_NEAR(ARELEM0(dup.get(), i, j), ARELEM0(src.get(), i, j), eps());
+        }
     }
 }
 
