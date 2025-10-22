@@ -11,6 +11,7 @@
           "description": "default preset that disable vcpkg, so that the dependencies are not built automatically",
           "hidden": true,
           "binaryDir": "${sourceDir}/build/${presetName}",
+          "installDir": "${sourceDir}/build/install/${presetName}",
           "cacheVariables": {
             "CMAKE_TOOLCHAIN_FILE": {
               "type": "FILEPATH",
@@ -22,7 +23,6 @@
           "name": "debug",
           "description": "Debug build",
           "inherits": "default",
-          "binaryDir": "${sourceDir}/build/debug",
           "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Debug"
           }
@@ -31,7 +31,6 @@
           "name": "release",
           "description": "Release build",
           "inherits": "default",
-          "binaryDir": "${sourceDir}/build/release",
           "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Release"
           }
@@ -40,6 +39,7 @@
           "name": "vcpkg-default",
           "hidden": true,
           "binaryDir": "${sourceDir}/build/${presetName}",
+          "installDir": "${sourceDir}/build/install/${presetName}",
           "cacheVariables": {
             "CMAKE_TOOLCHAIN_FILE": {
               "type": "FILEPATH",
