@@ -28,3 +28,6 @@ foreach(target ${ARTK_EXAMPLE_TARGETS})
     target_compile_features(${target} PUBLIC ${ARTK_CXX_FEATURE})
     target_link_libraries(${target} ARToolKitPlus)
 endforeach()
+
+install(TARGETS ${ARTK_EXAMPLE_TARGETS}
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
