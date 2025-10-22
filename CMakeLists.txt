@@ -12,6 +12,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 option(ARTK_BUILD_EXAMPLES "Build sample programs and utilies" ON)
 option(ARTK_USE_BOOST "Compile with boost (OpenCV calibration file support)" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(ARTK_ENABLE_WARNINGS_AS_ERRORS "Enable warnings as errors" OFF)
 
 # compile options for all targets depending on the compiler and the system
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
