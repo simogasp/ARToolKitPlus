@@ -101,6 +101,10 @@ set_target_properties(ARToolKitPlus PROPERTIES
   DEBUG_POSTFIX "d"
   VERSION ${PROJECT_VERSION}
   SOVERSION ${PROJECT_VERSION})
+
+set(ARTK_namespace "${PROJECT_NAME}::")
+add_library(${ARTK_namespace}ARToolKitPlus ALIAS ARToolKitPlus)
+
 if(ARTK_BUILD_EXAMPLES)
     add_subdirectory(bin/)
 endif(ARTK_BUILD_EXAMPLES)
