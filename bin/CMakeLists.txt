@@ -1,5 +1,3 @@
-link_directories(${LIBRARY_OUTPUT_PATH})
-
 # examples
 add_executable(simple ${AR_SOURCE_DIR}/sample/simple/main.cpp)
 target_link_libraries(simple ARToolKitPlus)
