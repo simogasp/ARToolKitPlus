@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "artoolkitplus",
+  "description": "ARToolKitPlus is an extended version of ARToolKit's vision code hat can be used to calculate camera position and orientation relative to physical markers in real time.",
+  "license": "GPL-3.0-only",
+  "dependencies": [
+    "gtest"
+  ]
+}
