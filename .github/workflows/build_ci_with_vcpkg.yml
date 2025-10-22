@@ -1,0 +1,71 @@
+name: CI-Build-with-vcpkg
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "25 7 * * 1"
+
+env:
+  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Linux - if you need some extra dependencies not provided by vcpkg, uncomment this section with the list of the
+    # required packages. If they are 'heavy' consider caching using awalsh128/cache-apt-pkgs-action@latest
+    # see example in .github/workflows/build_ci_linux_and_macos.yml
+#    - name: Install Linux dependencies
+#      if: runner.os == 'Linux'
+#      run: |
+#        sudo apt-get update
+#        sudo apt-get install -y libxi-dev libxmu-dev pkg-config autoconf libtool
+
+     # macOS - if you need some extra dependencies not provided by vcpkg, uncomment this section with the list of the
+     # required packages to install with homebrew. If they are 'heavy' consider caching using tecolicom/actions-use-homebrew-tools@v1
+     # see example in .github/workflows/build_ci_linux_and_macos.yml
+#    - name: Install macOS dependencies
+#      if: runner.os == 'macOS'
+#      run: |
+#        brew install autoconf automake libtool libxcb freeglut glew
+
+    - name: Cache vcpkg
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/vcpkg
+          ${{ github.workspace }}/vcpkg_installed
+        key: vcpkg-${{ runner.os }}-${{ hashFiles('**/vcpkg.json', '.github/workflows/build_ci_with_vcpkg.yml') }}
+        restore-keys: |
+          vcpkg-${{ runner.os }}-
+
+    - name: Set up vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        # v2025.09.17
+        vcpkgGitCommitId: '4334d8b4c8916018600212ab4dd4bbdc343065d1'
+
+    - name: Build (Release)
+      uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'vcpkg-release'
+        buildPreset: 'vcpkg-release'
+#        testPreset: 'vcpkg-release'
+
+    - name: Build (Debug)
+      uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'vcpkg-debug'
+        buildPreset: 'vcpkg-debug'
+#        testPreset: 'vcpkg-debug'
