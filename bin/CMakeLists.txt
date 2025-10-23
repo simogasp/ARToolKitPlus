@@ -22,6 +22,9 @@ list(APPEND ARTK_EXAMPLE_TARGETS idpatgen)
 add_executable(test ${AR_SOURCE_DIR}/tools/test/main.cpp)
 list(APPEND ARTK_EXAMPLE_TARGETS test)
 
+add_executable(test_version ${AR_SOURCE_DIR}/tools/test/test_version.cpp)
+list(APPEND ARTK_EXAMPLE_TARGETS test_version)
+
 foreach(target ${ARTK_EXAMPLE_TARGETS})
     target_compile_options(${target} PRIVATE ${ARTK_COMPILE_OPTIONS})
     target_compile_definitions(${target} PRIVATE ${ARTK_COMPILE_DEFINITIONS})
