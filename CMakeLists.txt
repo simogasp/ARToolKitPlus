@@ -81,9 +81,10 @@ endif(ARTK_USE_BOOST)
 set(AR_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 
 # Configure version header
+set(ARTK_version_header_file "${CMAKE_CURRENT_BINARY_DIR}/include/ARToolKitPlus/version.h")
 configure_file(
-    ${AR_SOURCE_DIR}/include/ARToolKitPlus/version.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/include/ARToolKitPlus/version.h
+    ${AR_SOURCE_DIR}/cmake/version.h.in
+    ${ARTK_version_header_file}
     @ONLY
 )
 
