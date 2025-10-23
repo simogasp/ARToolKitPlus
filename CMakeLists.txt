@@ -115,7 +115,7 @@ set(ARTK_namespace "${PROJECT_NAME}::")
 add_library(${ARTK_namespace}ARToolKitPlus ALIAS ARToolKitPlus)
 
 if(ARTK_BUILD_EXAMPLES)
-    add_subdirectory(bin/)
+    add_subdirectory(bin)
 endif(ARTK_BUILD_EXAMPLES)
 
 if(ARTK_BUILD_DOCS)
