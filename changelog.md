@@ -21,7 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.1]
 
-No changes in the code, just some modernizations to the build system.
+No changes in the code beside a little fix for the use of `delete` and the addition of a header file with semantic versioning macros.
+It mostly focuses on the modernizations of the build system.
 
 ### Added
 
@@ -31,6 +32,7 @@ No changes in the code, just some modernizations to the build system.
 - [cmake] added more aggressive compiler flags for warnings
 - [cmake] option to build the documentation with doxygen
 - [doc] this changelog
+- a version header with semantic versioning macros 
 
 ### Changed
 
@@ -38,6 +40,9 @@ No changes in the code, just some modernizations to the build system.
 - [cmake] set minimum required cmake version to 3.20
 - [cmake] set c++ standard to 11
 
+### Fixed
+
+- properly use `delete[]` for arrays (compiler warning)
 
 ## [2.2.0] - 2017-06-05
 
