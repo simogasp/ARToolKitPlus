@@ -175,7 +175,7 @@ int nearHull_2D(const MarkerPoint* P, int n, int k, MarkerPoint* H) {
 	if (minmax != minmin)
 		H[++top] = P[minmin]; // push joining endpoint onto stack
 
-	delete B; // free bins before returning
+	delete[] B; // free bins before returning
 	return top + 1; // # of points on the stack
 }
 

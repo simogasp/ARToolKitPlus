@@ -17,7 +17,7 @@
  *
  * For further information please contact Dieter Schmalstieg under
  * <schmalstieg@icg.tu-graz.ac.at> or write to Dieter Schmalstieg,
- * Graz University of Technology, Institut für Maschinelles Sehen und Darstellen,
+ * Graz University of Technology, Institut fï¿½r Maschinelles Sehen und Darstellen,
  * Inffeldgasse 16a, 8010 Graz, Austria.
  * ========================================================================
  * PROJECT: PocketKnife
@@ -120,8 +120,8 @@ saveAsTGA(Image* nImage, const char* nFileName)
 	fwrite(tmpBuf2, 1, size, fp);
 	fclose(fp);
 
-	delete tmpBuf;
-	delete tmpBuf2;
+	delete[] tmpBuf;
+	delete[] tmpBuf2;
 
 	return true;
 }

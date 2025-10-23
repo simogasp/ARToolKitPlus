@@ -110,7 +110,7 @@ rotate( unsigned char *data, int width, int height )
 
     memcpy(data, tmp, width*height*3*sizeof(unsigned char));
 
-    delete tmp;
+    delete[] tmp;
 }
 
 /* write artoolkit marker pattern */
