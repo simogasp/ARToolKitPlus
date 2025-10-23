@@ -25,6 +25,7 @@
 
 #include <cstdio>
 #include <ARToolKitPlus/TrackerSingleMarker.h>
+#include <test_config.h>
 
 using ARToolKitPlus::TrackerSingleMarker;
 
@@ -38,25 +39,29 @@ int main(int argc, char** argv) {
     const int bpp = 1;
     const size_t numPixels = width * height * bpp;
     size_t numBytesRead;
-    const char *fName = useBCH ? "data/image_320_240_8_marker_id_bch_nr0100.raw"
-            : "data/image_320_240_8_marker_id_simple_nr031.raw";
+    const auto dataDir = getDataDir();
+    const char *image = useBCH ? "image_320_240_8_marker_id_bch_nr0100.raw"
+            : "image_320_240_8_marker_id_simple_nr031.raw";
+
+    const auto fName = (dataDir + "/" + image);
+    const auto calibFile = dataDir + "/PGR_M12x0.5_2.5mm.cal";
 
     unsigned char cameraBuffer[numPixels];
 
     // try to load a test camera image.
     // these images files are expected to be simple 8-bit raw pixel
-    // data without any header. the images are expetected to have a
+    // data without any header. the images are expected to have a
     // size of 320x240.
-    if (FILE* fp = fopen(fName, "rb")) {
+    if (FILE* fp = fopen(fName.c_str(), "rb")) {
         numBytesRead = fread(cameraBuffer, 1, numPixels, fp);
         fclose(fp);
     } else {
-        printf("Failed to open %s\n", fName);
+        printf("Failed to open %s\n", fName.c_str());
         return -1;
     }
 
     if (numBytesRead != numPixels) {
-        printf("Failed to read %s\n", fName);
+        printf("Failed to read %s\n", fName.c_str());
         return -1;
     }
 
@@ -72,7 +77,7 @@ int main(int argc, char** argv) {
     //tracker.setLoadUndistLUT(true);
 
     // load a camera file.
-    if (!tracker.init("data/PGR_M12x0.5_2.5mm.cal", 1.0f, 1000.0f)) // load MATLAB file
+    if (!tracker.init(calibFile.c_str(), 1.0f, 1000.0f)) // load MATLAB file
     {
         printf("ERROR: init() failed\n");
         return -1;

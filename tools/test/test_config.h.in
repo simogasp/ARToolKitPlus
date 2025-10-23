@@ -1,3 +1,40 @@
 #pragma once
 
 #define ARTK_TEST_DATA_DIR "@TEST_DATA_DIR@"
+
+#include <sys/stat.h>
+#include <string>
+#include <stdexcept>
+
+/**
+ * @brief Checks if a directory exists at the given path.
+ *
+ * This function uses the POSIX `stat` system call to determine if the
+ * specified path exists and is a directory.
+ *
+ * @param path The path to check.
+ * @return true if the directory exists, false otherwise.
+ * @todo use std::filesystem when C++17 is available.
+ */
+inline bool dirExists(const std::string& path) {
+  struct stat info; // Structure to hold file status information
+  return stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR);
+}
+
+/**
+ * @brief Retrieves the appropriate data directory path.
+ *
+ * This function first checks if the build directory exists. If it does,
+ * it returns the build directory path. Otherwise, it falls back to the
+ * install directory path.
+ *
+ * @return The path to the data directory.
+ */
+inline std::string getDataDir() {
+  // Try build directory first
+  const std::string buildDir = ARTK_TEST_DATA_DIR;
+  if (dirExists(buildDir)) {
+    return buildDir;
+  }
+  throw std::runtime_error("Data directory not found in build or install paths.");
+}

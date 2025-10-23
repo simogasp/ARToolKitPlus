@@ -1,22 +1,25 @@
-set(ARTK_EXAMPLE_TARGETS "")
+set(ARTK_TOOLS_TARGETS "")
+set(ARTK_TEST_REGRESSION_TARGETS "")
 
 # examples
 add_executable(simple ${AR_SOURCE_DIR}/sample/simple/main.cpp)
-list(APPEND ARTK_EXAMPLE_TARGETS simple)
+target_include_directories(simple PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+list(APPEND ARTK_TEST_REGRESSION_TARGETS simple)
 
 add_executable(multi ${AR_SOURCE_DIR}/sample/multi/main.cpp)
-list(APPEND ARTK_EXAMPLE_TARGETS multi)
+target_include_directories(multi PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+list(APPEND ARTK_TEST_REGRESSION_TARGETS multi)
 
 # tools
 add_executable(patt2ppm ${AR_SOURCE_DIR}/tools/patt2ppm/main.cpp)
-list(APPEND ARTK_EXAMPLE_TARGETS patt2ppm)
+list(APPEND ARTK_TOOLS_TARGETS patt2ppm)
 
 add_executable(ppm2patt ${AR_SOURCE_DIR}/tools/ppm2patt/main.cpp)
-list(APPEND ARTK_EXAMPLE_TARGETS ppm2patt)
+list(APPEND ARTK_TOOLS_TARGETS ppm2patt)
 
 set(PAT_GEN_DIR ${AR_SOURCE_DIR}/tools/IdPatGen)
 add_executable(idpatgen ${PAT_GEN_DIR}/main.cpp ${PAT_GEN_DIR}/PN/Image.cpp ${PAT_GEN_DIR}/PN/ImageTool.cpp)
-list(APPEND ARTK_EXAMPLE_TARGETS idpatgen)
+list(APPEND ARTK_TOOLS_TARGETS idpatgen)
 
 # test program
 # Configure test data paths
@@ -28,17 +31,17 @@ configure_file(
 )
 add_executable(test ${AR_SOURCE_DIR}/tools/test/main.cpp)
 target_include_directories(test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-list(APPEND ARTK_EXAMPLE_TARGETS test)
+list(APPEND ARTK_TEST_REGRESSION_TARGETS test)
 
 add_executable(test_version ${AR_SOURCE_DIR}/tools/test/test_version.cpp)
-list(APPEND ARTK_EXAMPLE_TARGETS test_version)
+list(APPEND ARTK_TEST_REGRESSION_TARGETS test_version)
 
-foreach(target ${ARTK_EXAMPLE_TARGETS})
+foreach(target ${ARTK_TEST_REGRESSION_TARGETS} ${ARTK_TOOLS_TARGETS})
     target_compile_options(${target} PRIVATE ${ARTK_COMPILE_OPTIONS})
     target_compile_definitions(${target} PRIVATE ${ARTK_COMPILE_DEFINITIONS})
     target_compile_features(${target} PUBLIC ${ARTK_CXX_FEATURE})
     target_link_libraries(${target} ARToolKitPlus)
 endforeach()
 
-install(TARGETS ${ARTK_EXAMPLE_TARGETS}
+install(TARGETS ${ARTK_TOOLS_TARGETS}
   DESTINATION ${CMAKE_INSTALL_BINDIR})

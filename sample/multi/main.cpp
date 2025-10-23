@@ -25,6 +25,7 @@
 
 #include <cstdio>
 #include <ARToolKitPlus/TrackerMultiMarker.h>
+#include <test_config.h>
 
 using ARToolKitPlus::TrackerMultiMarker;
 
@@ -34,23 +35,26 @@ int main(int argc, char** argv) {
     const int bpp = 1;
     const size_t numPixels = width * height * bpp;
     size_t numBytesRead;
-    const char *fName = "data/markerboard_480-499.raw";
+    const auto dataDir = getDataDir();
+    const auto fName = dataDir + "/markerboard_480-499.raw";
+    const auto calibFile = dataDir + "/PGR_M12x0.5_2.5mm.cal";
+    const auto configFile = dataDir + "/markerboard_480-499.cfg";
     unsigned char cameraBuffer[numPixels];
 
     // try to load a test camera image.
     // these images files are expected to be simple 8-bit raw pixel
     // data without any header. the images are expetected to have a
     // size of 320x240.
-    if (FILE* fp = fopen(fName, "rb")) {
+    if (FILE* fp = fopen(fName.c_str(), "rb")) {
         numBytesRead = fread(cameraBuffer, 1, numPixels, fp);
         fclose(fp);
     } else {
-        printf("Failed to open %s\n", fName);
+        printf("Failed to open %s\n", fName.c_str());
         return -1;
     }
 
     if (numBytesRead != numPixels) {
-        printf("Failed to read %s\n", fName);
+        printf("Failed to read %s\n", fName.c_str());
         return -1;
     }
 
@@ -65,7 +69,7 @@ int main(int argc, char** argv) {
     tracker.setPixelFormat(ARToolKitPlus::PIXEL_FORMAT_LUM);
 
     // load a camera file.
-    if (!tracker.init("data/PGR_M12x0.5_2.5mm.cal", "data/markerboard_480-499.cfg", 1.0f, 1000.0f)) {
+    if (!tracker.init(calibFile.c_str(), configFile.c_str(), 1.0f, 1000.0f)) {
         printf("ERROR: init() failed\n");
         return -1;
     }
