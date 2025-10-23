@@ -31,6 +31,7 @@
 #include <ARToolKitPlus/TrackerSingleMarker.h>
 #include <ARToolKitPlus/TrackerMultiMarker.h>
 #include <ARToolKitPlus/Camera.h>
+#include "test_config.h"
 
 using namespace std;
 using ARToolKitPlus::TrackerSingleMarker;
@@ -64,8 +65,11 @@ void testCamera(Camera* cam) {
 int main(int argc, char** argv) {
     const int width = 320, height = 240, bpp = 1;
     const size_t numPixels = width * height * bpp;
-    const char *imageSingle = "data/image_320_240_8_marker_id_simple_nr031.raw";
-    const char *imageMulti = "data/markerboard_480-499.raw";
+    const string dataDir = ARTK_TEST_DATA_DIR;
+    const string imageSingle = dataDir + "/image_320_240_8_marker_id_simple_nr031.raw";
+    const string imageMulti = dataDir + "/markerboard_480-499.raw";
+    const string calibFile = dataDir + "/PGR_M12x0.5_2.5mm.cal";
+    const string multiConfig = dataDir + "/markerboard_480-499.cfg";
 
     char singleBuffer[numPixels];
     char multiBuffer[numPixels];
@@ -79,7 +83,7 @@ int main(int argc, char** argv) {
     imf.close();
 
     TrackerSingleMarker ts(width, height);
-    ts.init("data/PGR_M12x0.5_2.5mm.cal", 1.0f, 1000.0f);
+    ts.init(calibFile.c_str(), 1.0f, 1000.0f);
     ts.setPixelFormat(ARToolKitPlus::PIXEL_FORMAT_LUM);
     ts.setThreshold(150);
     ts.setUndistortionMode(ARToolKitPlus::UNDIST_LUT);
@@ -102,7 +106,7 @@ int main(int argc, char** argv) {
     cout << "SingleMarker Time: " << time << " (" << time/0.74 << ")" << endl;
 
     TrackerMultiMarker tm(width, height);
-    tm.init("data/PGR_M12x0.5_2.5mm.cal", "data/markerboard_480-499.cfg", 1.0f, 1000.0f);
+    tm.init(calibFile.c_str(), multiConfig.c_str(), 1.0f, 1000.0f);
     tm.setPixelFormat(ARToolKitPlus::PIXEL_FORMAT_LUM);
     tm.setBorderWidth(0.125f);
     tm.setUndistortionMode(ARToolKitPlus::UNDIST_LUT);

@@ -1,0 +1,3 @@
+#pragma once
+
+#define ARTK_TEST_DATA_DIR "@TEST_DATA_DIR@"

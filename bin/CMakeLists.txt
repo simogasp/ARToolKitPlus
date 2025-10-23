@@ -19,7 +19,15 @@ add_executable(idpatgen ${PAT_GEN_DIR}/main.cpp ${PAT_GEN_DIR}/PN/Image.cpp ${PA
 list(APPEND ARTK_EXAMPLE_TARGETS idpatgen)
 
 # test program
+# Configure test data paths
+set(TEST_DATA_DIR "${AR_SOURCE_DIR}/sample/data")
+configure_file(
+    ${AR_SOURCE_DIR}/tools/test/test_config.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/test_config.h
+    @ONLY
+)
 add_executable(test ${AR_SOURCE_DIR}/tools/test/main.cpp)
+target_include_directories(test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 list(APPEND ARTK_EXAMPLE_TARGETS test)
 
 add_executable(test_version ${AR_SOURCE_DIR}/tools/test/test_version.cpp)
