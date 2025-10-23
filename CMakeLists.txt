@@ -178,7 +178,7 @@ if (ARTK_INSTALL)
         RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
         INCLUDES DESTINATION "${ARTK_include_install_dir}"
     )
-message(STATUS ${HEADERS_AR})
+
     # Headers:
     install(
         DIRECTORY "${AR_SOURCE_DIR}/include/ARToolKitPlus"
