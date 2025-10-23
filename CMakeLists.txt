@@ -181,13 +181,13 @@ if (ARTK_INSTALL)
 
     # Headers:
     install(
-        DIRECTORY "${AR_SOURCE_DIR}/include/ARToolKitPlus"
+        DIRECTORY "${AR_SOURCE_DIR}/include/${PROJECT_NAME}"
         DESTINATION "${ARTK_include_install_dir}"
     )
     # install generated version header
     install(
         FILES "${ARTK_version_header_file}"
-        DESTINATION "${ARTK_include_install_dir}/ARToolKitPlus")
+        DESTINATION "${ARTK_include_install_dir}/${PROJECT_NAME}")
 
 
     # Config
