@@ -1,5 +1,6 @@
-ARToolKitPlus
-=============
+# ARToolKitPlus
+
+[![CI-Build-with-vcpkg](https://github.com/simogasp/ARToolKitPlus/actions/workflows/build_ci_with_vcpkg.yml/badge.svg)](https://github.com/simogasp/ARToolKitPlus/actions/workflows/build_ci_with_vcpkg.yml)
 
 *ARToolKit* is a software library that can be used to calculate
 camera position and orientation relative to physical markers
