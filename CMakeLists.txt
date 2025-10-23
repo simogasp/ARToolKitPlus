@@ -80,6 +80,13 @@ endif(ARTK_USE_BOOST)
 
 set(AR_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 
+# Configure version header
+configure_file(
+    ${AR_SOURCE_DIR}/include/ARToolKitPlus/version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/include/ARToolKitPlus/version.h
+    @ONLY
+)
+
 # ARToolkitPlus core files (headers and sources)
 file(GLOB_RECURSE HEADERS_AR ${AR_SOURCE_DIR}/include/ARToolKitPlus/*.h)
 file(GLOB SOURCES_AR
@@ -94,6 +101,7 @@ target_compile_options(ARToolKitPlus PRIVATE ${ARTK_COMPILE_OPTIONS})
 target_compile_definitions(ARToolKitPlus PRIVATE ${ARTK_COMPILE_DEFINITIONS})
 target_include_directories(ARToolKitPlus PUBLIC
   "$<BUILD_INTERFACE:${AR_SOURCE_DIR}/include>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
   "$<INSTALL_INTERFACE:include/>")
 target_compile_features(ARToolKitPlus PUBLIC ${ARTK_CXX_FEATURE})
 

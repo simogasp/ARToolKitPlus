@@ -1,0 +1,126 @@
+#pragma once
+
+// C++11/C++17/C++20 compatibility layer
+#if __cplusplus >= 202002L
+    #define ARTK_CXX20
+    #include <compare>
+    #include <string_view>
+#elif __cplusplus >= 201703L
+    #define ARTK_CXX17
+    #include <string_view>
+#endif
+
+// Nodiscard attribute (C++17+)
+#if defined(ARTK_CXX17) || defined(ARTK_CXX20)
+    #define ARTK_NODISCARD [[nodiscard]]
+#else
+    #define ARTK_NODISCARD
+#endif
+
+namespace ARToolKitPlus {
+
+// Version constants - works in all C++ versions
+#ifdef ARTK_CXX17
+    inline constexpr int version_major = @PROJECT_VERSION_MAJOR@;
+    inline constexpr int version_minor = @PROJECT_VERSION_MINOR@;
+    inline constexpr int version_patch = @PROJECT_VERSION_PATCH@;
+#else
+    // C++11: use constexpr at namespace scope (no inline needed)
+    static constexpr int version_major = @PROJECT_VERSION_MAJOR@;
+    static constexpr int version_minor = @PROJECT_VERSION_MINOR@;
+    static constexpr int version_patch = @PROJECT_VERSION_PATCH@;
+#endif
+
+// Version string - adapts to C++ standard
+#ifdef ARTK_CXX17
+    inline constexpr std::string_view version_string = "@PROJECT_VERSION@";
+#else
+    constexpr const char* version_string = "@PROJECT_VERSION@";
+#endif
+
+// Version struct with forward-compatible comparison
+struct Version {
+    int major;
+    int minor;
+    int patch;
+
+    constexpr Version(int maj, int min, int pat) noexcept
+        : major(maj), minor(min), patch(pat) {}
+
+    ARTK_NODISCARD constexpr int to_int() const noexcept {
+        return major * 10000 + minor * 100 + patch;
+    }
+
+#ifdef ARTK_CXX20
+    // C++20: use spaceship operator (auto-generates all comparisons)
+    constexpr auto operator<=>(const Version&) const noexcept = default;
+    constexpr bool operator==(const Version&) const noexcept = default;
+#else
+    // C++11/C++17: define all comparisons explicitly
+    constexpr bool operator==(const Version& other) const noexcept {
+        return to_int() == other.to_int();
+    }
+
+    constexpr bool operator!=(const Version& other) const noexcept {
+        return to_int() != other.to_int();
+    }
+
+    constexpr bool operator<(const Version& other) const noexcept {
+        return to_int() < other.to_int();
+    }
+
+    constexpr bool operator<=(const Version& other) const noexcept {
+        return to_int() <= other.to_int();
+    }
+
+    constexpr bool operator>(const Version& other) const noexcept {
+        return to_int() > other.to_int();
+    }
+
+    constexpr bool operator>=(const Version& other) const noexcept {
+        return to_int() >= other.to_int();
+    }
+#endif
+};
+
+// Current version
+#ifdef ARTK_CXX17
+    inline constexpr Version current_version{version_major, version_minor, version_patch};
+#else
+    // C++11: use constexpr at namespace scope
+    constexpr Version current_version(version_major, version_minor, version_patch);
+#endif
+
+// Version checking functions
+ARTK_NODISCARD constexpr bool version_at_least(int major, int minor, int patch) noexcept {
+    return current_version >= Version(major, minor, patch);
+}
+
+// C++17+: Add variable template for compile-time checks
+#if defined(ARTK_CXX17) || defined(ARTK_CXX20)
+template<int Major, int Minor, int Patch>
+inline constexpr bool version_at_least_v =
+    current_version >= Version{Major, Minor, Patch};
+#endif
+
+// Legacy C-style macros (always available for compatibility)
+#define ARTOOLKITPLUS_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define ARTOOLKITPLUS_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define ARTOOLKITPLUS_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#define ARTOOLKITPLUS_VERSION_STRING "@PROJECT_VERSION@"
+
+#define ARTOOLKITPLUS_VERSION \
+    (ARTOOLKITPLUS_VERSION_MAJOR * 10000 + \
+     ARTOOLKITPLUS_VERSION_MINOR * 100 + \
+     ARTOOLKITPLUS_VERSION_PATCH)
+
+#define ARTOOLKITPLUS_VERSION_CHECK(major, minor, patch) \
+    ((major * 10000) + (minor * 100) + (patch))
+
+#define ARTOOLKITPLUS_VERSION_AT_LEAST(major, minor, patch) \
+    (ARTOOLKITPLUS_VERSION >= ARTOOLKITPLUS_VERSION_CHECK(major, minor, patch))
+
+} // namespace ARToolKitPlus
+
+// Cleanup internal macros
+#undef ARTK_NODISCARD
