@@ -1,27 +1,36 @@
-Install instructions for Linux:
-===============================
+# Building instructions
 
-Remarks:
---------
+ARToolKitPlus requires:
 
-The make environment for Linux is based on the cmake system.
-Please install scons before compiling ARToolKitPlus!
+- A C++ compiler with at least C++11 support
+- CMake 3.20 or higher
+- [optional] Boost fo OpenCV calibration file support
+- [optional] GTest for unit tests
 
-Compile Steps:
---------------
+You can build the project using the provided CMake presets.
+From the root of the ARToolKitPlus source directory:
 
-- Start compilation with
-  make
+```bash
+ cmake --preset release
+ # or
+ cmake --preset debug
+```
 
-- You should end up with
+followed by
 
-  ./lib ... ARToolKitPlus shared libraries
-  ./bin ... 
-	    simple   ... Sample program
-	    multi    ... Sample program
-	    idpatgen ... For generating ID markers
+```bash
+ cmake --build --preset release
+ # or
+ cmake --build --preset debug
+```
 
-- For executing, do not forget to update your LD_LIBRARY_PATH
+This will generate the library files in the `build/<preset name>` directory.
+If you need to install the library you can run:
 
-- You can install the library system-wide using
-  make install DESTDIR=/
+```bash
+ cmake --build --preset release -t install
+# or
+ cmake --build --preset debug -t install
+ ```
+This will install the library and headers in in `build/install/<preset name>`.
+If you need to install to a specific location you can change the `installDir` in the CMakePresets.json file.
