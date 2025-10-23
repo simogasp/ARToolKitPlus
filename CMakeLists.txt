@@ -202,5 +202,10 @@ if (ARTK_INSTALL)
         NAMESPACE "${ARTK_namespace}"
         DESTINATION "${ARTK_config_install_dir}"
     )
+
+    # if tools and examples are built, install the data files too as they are needed
+    if(ARTK_BUILD_EXAMPLES)
+        install(DIRECTORY "${AR_SOURCE_DIR}/sample/data" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME})
+    endif(ARTK_BUILD_EXAMPLES)
 endif ()
 
