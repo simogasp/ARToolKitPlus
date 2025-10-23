@@ -21,8 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.1]
 
-No changes in the code beside a little fix for the use of `delete` and the addition of a header file with semantic versioning macros.
-It mostly focuses on the modernizations of the build system.
+Small changes to the codebase including:
+* a small fix for the use of `delete` 
+* the addition of a header file with semantic versioning macros
+* added a header to conveniently get the data folder path for the test samples
+The rest mostly focuses on the modernizations of the build system.
 
 ### Added
 
@@ -32,7 +35,8 @@ It mostly focuses on the modernizations of the build system.
 - [cmake] added more aggressive compiler flags for warnings
 - [cmake] option to build the documentation with doxygen
 - [doc] this changelog
-- a version header with semantic versioning macros 
+- a version header with semantic versioning macros
+- a header to get the data folder path for test samples
 
 ### Changed
 
