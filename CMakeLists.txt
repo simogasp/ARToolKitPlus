@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(ARToolKitPlus
-        VERSION 2.3.0
+        VERSION 2.2.1
         LANGUAGES CXX
         DESCRIPTION "ARToolKitPlus - A C++ based Augmented Reality Tracking Library"
         )
