@@ -34,6 +34,7 @@ The rest mostly focuses on the modernizations of the build system.
 - [cmake] proper export of targets so that the library can be consumed by other cmake projects
 - [cmake] added more aggressive compiler flags for warnings
 - [cmake] option to build the documentation with doxygen
+- [cmake] sample to show how to use ARToolKitPlus as a 3rd party library in a cmake project
 - [doc] this changelog
 - a version header with semantic versioning macros
 - a header to get the data folder path for test samples
@@ -47,6 +48,7 @@ The rest mostly focuses on the modernizations of the build system.
 ### Fixed
 
 - properly use `delete[]` for arrays (compiler warning)
+- restored the `HULL_FOUR` for the test sample otherwise the test fails
 
 ## [2.2.0] - 2017-06-05
 
