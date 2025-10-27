@@ -71,3 +71,12 @@ jobs:
         buildPreset: 'vcpkg-debug'
         buildPresetAdditionalArgs: "['-t install']"
 #        testPreset: 'vcpkg-debug'
+
+    # test the build as 3rd party library
+    - name: Test as 3rd party library
+      run: |
+        cd sample/as3rdparty
+        cmake --preset release -DARToolKitPlus_DIR:PATH=${{ github.workspace }}/build/install/vcpkg-release/lib/cmake/ARToolKitPlus 
+        cmake --build --preset release
+        cmake --preset debug -DARToolKitPlus_DIR:PATH=${{ github.workspace }}/build/install/vcpkg-debug/lib/cmake/ARToolKitPlus 
+        cmake --build --preset debug
