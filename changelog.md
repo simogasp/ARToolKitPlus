@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-## [2.2.1]
+## [2.2.1] - 2025-10-27
 
 Small changes to the codebase including:
 * a small fix for the use of `delete` 
@@ -30,6 +30,7 @@ The rest mostly focuses on the modernizations of the build system.
 ### Added
 
 - [ci] added workflow with vcpkg on windows, linux, and macos
+- [ci] added a test for building a sample that uses ARToolKitPlus as a 3rd party library via cmake and vcpkg
 - [cmake] added presets and vcpkg toolchain support
 - [cmake] proper export of targets so that the library can be consumed by other cmake projects
 - [cmake] added more aggressive compiler flags for warnings
