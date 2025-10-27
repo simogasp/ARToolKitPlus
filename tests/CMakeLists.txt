@@ -19,6 +19,7 @@ message(STATUS "GoogleTest version: ${GTest_VERSION}")
 set(ARTK_TEST_SOURCES
         unit/core/test_matrix.cpp
 #        unit/core/test_vector.cpp
+        unit/test_version.cpp
 )
 
 # Discover and register tests
