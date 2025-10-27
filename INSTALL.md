@@ -34,3 +34,10 @@ If you need to install the library you can run:
  ```
 This will install the library and headers in in `build/install/<preset name>`.
 If you need to install to a specific location you can change the `installDir` in the CMakePresets.json file.
+
+## ArtoolKitPlus as a 3rd party library
+
+ARToolKitPlus can be used as a 3rd party library in your CMake project using the `find_package` command or the `FetchContent` module if you want to build it as part of your project.
+In both cases, a target named `ARToolKitPlus::ARToolKitPlus` will be created that you can link against.
+
+Check the [`sample/as3rdparty/CMakeLists.txt`](sample/as3rdparty/CMakeLists.txt) file for an example of how to do this.
