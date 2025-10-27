@@ -107,6 +107,7 @@ int main(int argc, char** argv) {
 
     TrackerMultiMarker tm(width, height);
     tm.init(calibFile.c_str(), multiConfig.c_str(), 1.0f, 1000.0f);
+    tm.setHullMode(ARToolKitPlus::HULL_TRACKING_MODE::HULL_FOUR);
     tm.setPixelFormat(ARToolKitPlus::PIXEL_FORMAT_LUM);
     tm.setBorderWidth(0.125f);
     tm.setUndistortionMode(ARToolKitPlus::UNDIST_LUT);
