@@ -87,7 +87,7 @@ AR_EXPORT int free(ARVec *v);
  * @return The computed scale factor (-s), representing the magnitude to reflect across
  * @note If the input vector has zero norm, it remains unchanged and returns 0
  */
-AR_EXPORT ARFloat household(ARVec *x);
+AR_EXPORT ARFloat household(const ARVec *x);
 
 /**
  * @brief Computes the inner product (dot product) of two vectors
@@ -100,7 +100,7 @@ AR_EXPORT ARFloat household(ARVec *x);
  * @return The inner product of the two vectors
  * @pre x->clm == y->clm (vectors must have same dimension)
  */
-AR_EXPORT ARFloat innerproduct(ARVec *x, ARVec *y);
+AR_EXPORT ARFloat innerproduct(const ARVec *x, const ARVec *y);
 
 /**
  * @brief Tridiagonalizes a symmetric matrix using Householder transformations
@@ -117,7 +117,7 @@ AR_EXPORT ARFloat innerproduct(ARVec *x, ARVec *y);
  * @pre a->clm == d->clm (diagonal vector must match matrix dimension)
  * @pre a->clm == e->clm + 1 (sub-diagonal vector dimension must be matrix dimension - 1)
  */
-AR_EXPORT int tridiagonalize(ARMat *a, ARVec *d, ARVec *e);
+AR_EXPORT int tridiagonalize(const ARMat *a, const ARVec *d, const ARVec *e);
 
 } // namespace Vector
 

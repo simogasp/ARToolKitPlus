@@ -25,9 +25,7 @@
 #include <ARToolKitPlus/matrix.h>
 #include <ARToolKitPlus/vector.h>
 
-namespace ARToolKitPlus {
-
-namespace Vector {
+namespace ARToolKitPlus::Vector {
 
 // from vAlloc.c
 ARVec*
@@ -35,13 +33,13 @@ alloc(int clm) {
     ARVec *v;
 
     v = (ARVec *) malloc(sizeof(ARVec));
-    if (v == NULL)
-        return NULL;
+    if (v == nullptr)
+        return nullptr;
 
     v->v = (ARFloat *) malloc(sizeof(ARFloat) * clm);
-    if (v->v == NULL) {
+    if (v->v == nullptr) {
         free(v);
-        return NULL;
+        return nullptr;
     }
 
     v->clm = clm;
@@ -58,18 +56,16 @@ int free(ARVec *v) {
 }
 
 // from vHouse.c
-ARFloat household(ARVec *x) {
-    ARFloat s, t;
-    int i;
+ARFloat household(const ARVec *x) {
 
-    s = (ARFloat) sqrt(innerproduct(x, x));
+    auto s = sqrt(innerproduct(x, x));
 
     if (s != 0.0) {
         if (x->v[0] < 0)
             s = -s;
         x->v[0] += s;
-        t = (ARFloat) 1 / (ARFloat) sqrt(x->v[0] * s);
-        for (i = 0; i < x->clm; i++) {
+        const ARFloat t = static_cast<ARFloat>(1) / sqrt(x->v[0] * s);
+        for (int i = 0; i < x->clm; i++) {
             x->v[i] *= t;
         }
     }
@@ -78,26 +74,24 @@ ARFloat household(ARVec *x) {
 }
 
 // from vInnerP.c
-ARFloat innerproduct(ARVec *x, ARVec *y) {
+ARFloat innerproduct(const ARVec *x, const ARVec *y) {
     ARFloat result = 0.0;
-    int i;
 
     assert(x->clm == y->clm);
 
-    for (i = 0; i < x->clm; i++) {
+    for (int i = 0; i < x->clm; i++) {
         result += x->v[i] * y->v[i];
     }
 
-    return (result);
+    return result;
 }
 
 // from vTridiag.c
-int tridiagonalize(ARMat *a, ARVec *d, ARVec *e) {
-    ARVec wv1, wv2;
-    ARFloat *v;
-    ARFloat s, t, p, q;
-    int dim;
-    int i, j, k;
+int tridiagonalize(const ARMat *a, const ARVec *d, const ARVec *e) {
+
+    int i;
+    int j;
+    int k;
 
     if (a->clm != a->row)
         return (-1);
@@ -105,12 +99,14 @@ int tridiagonalize(ARMat *a, ARVec *d, ARVec *e) {
         return (-1);
     if (a->clm != e->clm + 1)
         return (-1);
-    dim = a->clm;
+    const int dim = a->clm;
 
     for (k = 0; k < dim - 2; k++) {
-        v = &(a->m[k * dim]);
+        const auto v = &(a->m[k * dim]);
         d->v[k] = v[k];
 
+        ARVec wv1{};
+        ARVec wv2{};
         wv1.clm = dim - k - 1;
         wv1.v = &(v[k + 1]);
         e->v[k] = household(&wv1);
@@ -118,7 +114,7 @@ int tridiagonalize(ARMat *a, ARVec *d, ARVec *e) {
             continue;
 
         for (i = k + 1; i < dim; i++) {
-            s = 0.0;
+            ARFloat s = 0.0;
             for (j = k + 1; j < i; j++) {
                 s += a->m[j * dim + i] * v[j];
             }
@@ -131,10 +127,10 @@ int tridiagonalize(ARMat *a, ARVec *d, ARVec *e) {
         wv1.clm = wv2.clm = dim - k - 1;
         wv1.v = &(v[k + 1]);
         wv2.v = &(d->v[k + 1]);
-        t = innerproduct(&wv1, &wv2) / 2;
+        const auto t = innerproduct(&wv1, &wv2) / 2;
         for (i = dim - 1; i > k; i--) {
-            p = v[i];
-            q = d->v[i] -= t * p;
+            const ARFloat p = v[i];
+            const ARFloat q = d->v[i] -= t * p;
             for (j = i; j < dim; j++) {
                 a->m[i * dim + j] -= p * (d->v[j]) + q * v[j];
             }
@@ -150,13 +146,15 @@ int tridiagonalize(ARMat *a, ARVec *d, ARVec *e) {
         d->v[dim - 1] = a->m[(dim - 1) * dim + (dim - 1)];
 
     for (k = dim - 1; k >= 0; k--) {
-        v = &(a->m[k * dim]);
+        const auto v = &(a->m[k * dim]);
         if (k < dim - 2) {
             for (i = k + 1; i < dim; i++) {
+                ARVec wv1{};
+                ARVec wv2{};
                 wv1.clm = wv2.clm = dim - k - 1;
                 wv1.v = &(v[k + 1]);
                 wv2.v = &(a->m[i * dim + k + 1]);
-                t = innerproduct(&wv1, &wv2);
+                const auto t = innerproduct(&wv1, &wv2);
                 for (j = k + 1; j < dim; j++)
                     a->m[i * dim + j] -= t * v[j];
             }
@@ -166,10 +164,7 @@ int tridiagonalize(ARMat *a, ARVec *d, ARVec *e) {
         v[k] = 1;
     }
 
-    return (0);
+    return 0;
 }
 
-} // namespace Vector
-
-
-} // namespace ARToolKitPlus
+} // namespace ARToolKitPlus::Vector
