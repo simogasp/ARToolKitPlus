@@ -49,6 +49,7 @@ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message(STATUS "ARToolKitPlus version: ${PROJECT_VERSION}")
 message(STATUS "Build shared libraries: ${BUILD_SHARED_LIBS}")
 message(STATUS "Build examples: ${ARTK_BUILD_EXAMPLES}")
+message(STATUS "Build with Boost support for OpenCV calibration files: ${ARTK_USE_BOOST}")
 message(STATUS "Treat warnings as errors: ${ARTK_ENABLE_WARNINGS_AS_ERRORS}")
 message(STATUS "Install the library: ${ARTK_INSTALL}")
 message(STATUS "Build documentation: ${ARTK_BUILD_DOCS}")
@@ -93,7 +94,8 @@ message(STATUS "Using C++ standard: ${CMAKE_CXX_STANDARD}")
 
 
 if(ARTK_USE_BOOST)
-    add_definitions(-DAR_WITH_BOOST)
+    find_package(Boost REQUIRED COMPONENTS property_tree)
+    list(APPEND ARTK_COMPILE_DEFINITIONS -DAR_WITH_BOOST)
 endif(ARTK_USE_BOOST)
 
 set(AR_SOURCE_DIR ${PROJECT_SOURCE_DIR})
@@ -125,6 +127,9 @@ target_include_directories(ARToolKitPlus PUBLIC
 target_compile_features(ARToolKitPlus PUBLIC ${ARTK_CXX_FEATURE})
 if(ARTK_BUILD_WITH_COVERAGE)
     target_link_options(ARToolKitPlus PUBLIC --coverage)
+endif()
+if(ARTK_USE_BOOST)
+    target_link_libraries(ARToolKitPlus PRIVATE Boost::property_tree)
 endif()
 
 set_target_properties(ARToolKitPlus PROPERTIES
