@@ -26,8 +26,26 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ARTK_ENABLE_WARNINGS_AS_ERRORS "Enable warnings as errors" OFF)
 option(ARTK_INSTALL "Install ARToolKitPlus library" ${ARTK_INSTALL_DEFAULT})
 option(ARTK_BUILD_TESTS "Build unit tests" ${ARTK_IS_MAIN_PROJECT})
+option(ARTK_BUILD_WITH_COVERAGE "Build with code coverage (only for Debug builds with GCC or Clang)" OFF)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
+endif()
+
+# coverage is only supported for Debug and RelWithDebInfo builds with GCC or Clang
+if(ARTK_BUILD_WITH_COVERAGE)
+    if(NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU"))
+        message(WARNING "Code coverage is only supported with GCC or Clang. Disabling ARTK_BUILD_WITH_COVERAGE.")
+        set(ARTK_BUILD_WITH_COVERAGE OFF)
+    elseif(NOT (CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo"))
+        message(WARNING "Code coverage is only supported for Debug or RelWithDebInfo builds. Disabling ARTK_BUILD_WITH_COVERAGE.")
+        set(ARTK_BUILD_WITH_COVERAGE OFF)
+    endif()
+endif()
 
 message(STATUS "ARToolKitPlus is main project: ${ARTK_IS_MAIN_PROJECT}")
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message(STATUS "ARToolKitPlus version: ${PROJECT_VERSION}")
 message(STATUS "Build shared libraries: ${BUILD_SHARED_LIBS}")
 message(STATUS "Build examples: ${ARTK_BUILD_EXAMPLES}")
@@ -35,10 +53,14 @@ message(STATUS "Treat warnings as errors: ${ARTK_ENABLE_WARNINGS_AS_ERRORS}")
 message(STATUS "Install the library: ${ARTK_INSTALL}")
 message(STATUS "Build documentation: ${ARTK_BUILD_DOCS}")
 message(STATUS "Build tests: ${ARTK_BUILD_TESTS}")
+message(STATUS "Build with code coverage: ${ARTK_BUILD_WITH_COVERAGE}")
 
 # compile options for all targets depending on the compiler and the system
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     set(ARTK_COMPILE_OPTIONS "-Wall;-Wextra;-pedantic;-Wno-comment;-Wshadow;-Wnon-virtual-dtor;-Wpedantic;-Wconversion;-Wmisleading-indentation;-Wsign-conversion;-Wfloat-equal")
+    if(ARTK_BUILD_WITH_COVERAGE)
+        list(APPEND ARTK_COMPILE_OPTIONS "--coverage")
+    endif()
     if(ARTK_ENABLE_WARNINGS_AS_ERRORS)
         list(APPEND ARTK_COMPILE_OPTIONS "-Werror")
     endif()
@@ -69,12 +91,6 @@ endif()
 set(ARTK_CXX_FEATURE cxx_std_${CMAKE_CXX_STANDARD})
 message(STATUS "Using C++ standard: ${CMAKE_CXX_STANDARD}")
 
-
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
-endif()
-message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 if(ARTK_USE_BOOST)
     add_definitions(-DAR_WITH_BOOST)
@@ -107,6 +123,9 @@ target_include_directories(ARToolKitPlus PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
   "$<INSTALL_INTERFACE:include/>")
 target_compile_features(ARToolKitPlus PUBLIC ${ARTK_CXX_FEATURE})
+if(ARTK_BUILD_WITH_COVERAGE)
+    target_link_options(ARToolKitPlus PUBLIC --coverage)
+endif()
 
 set_target_properties(ARToolKitPlus PROPERTIES
   DEBUG_POSTFIX "d"
