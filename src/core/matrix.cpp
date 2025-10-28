@@ -24,9 +24,7 @@
 
 #include <ARToolKitPlus/matrix.h>
 
-namespace ARToolKitPlus {
-
-namespace Matrix {
+namespace ARToolKitPlus::Matrix {
 
 #define MATRIX(name,x,y,width)  ( *(name + (width) * (x) + (y)) )
 
@@ -34,19 +32,17 @@ namespace Matrix {
 // static ARFloat mdet(ARFloat *ap, int dimen, int rowa);
 static ARFloat *minv(ARFloat *ap, int dimen, int rowa);
 
-// from mAlloc.c
-ARMat*
-alloc(int row, int clm) {
-	ARMat *m;
+// from mAlloc.
+ARMat* alloc(int row, int clm) {
 
-	m = (ARMat *) malloc(sizeof(ARMat));
-	if (m == NULL)
-		return NULL;
+    ARMat* m = (ARMat*)malloc(sizeof(ARMat));
+	if (m == nullptr)
+		return nullptr;
 
-	m->m = (ARFloat *) malloc(sizeof(ARFloat) * row * clm);
-	if (m->m == NULL) {
+	m->m = (ARFloat *) malloc(sizeof(ARFloat) * static_cast<std::size_t>(row * clm));
+	if (m->m == nullptr) {
 		free(m);
-		return NULL;
+		return nullptr;
 	} else {
 		m->row = row;
 		m->clm = clm;
@@ -64,30 +60,27 @@ int free(ARMat *m) {
 }
 
 // from mAllocDup.c
-ARMat*
-allocDup(ARMat *source) {
-	ARMat *dest;
+ARMat* allocDup(const ARMat *source) {
 
-	dest = alloc(source->row, source->clm);
-	if (dest == NULL)
-		return NULL;
+    ARMat* dest = alloc(source->row, source->clm);
+	if (dest == nullptr)
+		return nullptr;
 
 	if (dup(dest, source) < 0) {
 		free(dest);
-		return NULL;
+		return nullptr;
 	}
 
 	return dest;
 }
 
 // from mDup.c
-int dup(ARMat *dest, ARMat *source) {
-	int r, c;
+int dup(const ARMat *dest, const ARMat *source) {
 
-	assert(dest->row == source->row && dest->clm == source->clm);
+    assert(dest->row == source->row && dest->clm == source->clm);
 
-	for (r = 0; r < source->row; r++) {
-		for (c = 0; c < source->clm; c++) {
+	for (int r = 0; r < source->row; ++r) {
+		for (int c = 0; c < source->clm; ++c) {
 			ARELEM0(dest, r, c) = ARELEM0(source, r, c);
 		}
 	}
@@ -95,15 +88,14 @@ int dup(ARMat *dest, ARMat *source) {
 }
 
 // from mMul.c
-int mul(ARMat *dest, ARMat *a, ARMat *b) {
-	int r, c, i;
+int mul(const ARMat *dest, const ARMat *a, const ARMat *b) {
 
 	assert(a->clm == b->row && dest->row == a->row && dest->clm == b->clm);
 
-	for (r = 0; r < dest->row; r++) {
-		for (c = 0; c < dest->clm; c++) {
+	for (int r = 0; r < dest->row; ++r) {
+		for (int c = 0; c < dest->clm; ++c) {
 			ARELEM0(dest, r, c) = 0.0;
-			for (i = 0; i < a->clm; i++) {
+			for (int i = 0; i < a->clm; ++i) {
 				ARELEM0(dest, r, c) += ARELEM0(a, r, i) * ARELEM0(b, i, c);
 			}
 		}
@@ -113,37 +105,42 @@ int mul(ARMat *dest, ARMat *a, ARMat *b) {
 }
 
 // from mSelfInv.c
-int selfInv(ARMat *m) {
-	if (minv(m->m, m->row, m->row) == NULL)
+int selfInv(const ARMat *m) {
+	if (minv(m->m, m->row, m->row) == nullptr)
 		return -1;
 
 	return 0;
 }
 
 // from mSelfInv.c -- MATRIX inverse function
-static ARFloat*
-minv(ARFloat *ap, int dimen, int rowa) {
-	ARFloat *wap, *wcp, *wbp;/* work pointer                 */
-	int i, j, n, ip = 0, nwork;
-	int nos[50];
-	ARFloat epsl;
-	ARFloat p, pbuf, work;
-	//ARFloat  fabs();
+static ARFloat* minv(ARFloat *ap, int dimen, int rowa) {
+	ARFloat *wap;
+	ARFloat *wcp;
+	ARFloat *wbp;/* work pointer                 */
+	int i{0};
+	int j{0};
+	int ip = 0;
+    int nos[50];
+    ARFloat p;
+    ARFloat pbuf;
+    ARFloat work;
 
-	epsl = (ARFloat) 1.0e-10; /* Threshold value      */
+    constexpr auto epsl = static_cast<ARFloat>(1.0e-10); /* Threshold value      */
 
-	switch (dimen) {
-	case (0):
-		return (NULL); /* check size */
-	case (1):
-		*ap = (ARFloat) 1.0 / (*ap);
-		return (ap); /* 1 dimension */
+	if (dimen == 0)
+	{
+	    return nullptr; /* check size */
+	}
+    if (dimen == 1)
+	{
+		*ap = static_cast<ARFloat>(1.0) / *ap;
+		return ap; /* 1 dimension */
 	}
 
-	for (n = 0; n < dimen; n++)
+	for (int n = 0; n < dimen; ++n)
 		nos[n] = n;
 
-	for (n = 0; n < dimen; n++) {
+	for (int n = 0; n < dimen; ++n) {
 		wcp = ap + n * rowa;
 
 		for (i = n, wap = wcp, p = 0.0; i < dimen; i++, wap += rowa)
@@ -152,9 +149,9 @@ minv(ARFloat *ap, int dimen, int rowa) {
 				ip = i;
 			}
 		if (p <= epsl)
-			return (NULL);
+			return nullptr;
 
-		nwork = nos[ip];
+		const int nwork = nos[ip];
 		nos[ip] = nos[n];
 		nos[n] = nwork;
 
@@ -166,7 +163,7 @@ minv(ARFloat *ap, int dimen, int rowa) {
 
 		for (j = 1, wap = wcp, work = *wcp; j < dimen; j++, wap++)
 			*wap = *(wap + 1) / work;
-		*wap = (ARFloat) 1.0 / work;
+		*wap = static_cast<ARFloat>(1.0) / work;
 
 		for (i = 0; i < dimen; i++) {
 			if (i != n) {
@@ -178,7 +175,7 @@ minv(ARFloat *ap, int dimen, int rowa) {
 		}
 	}
 
-	for (n = 0; n < dimen; n++) {
+	for (int n = 0; n < dimen; n++) {
 		for (j = n; j < dimen; j++)
 			if (nos[j] == n)
 				break;
@@ -189,10 +186,7 @@ minv(ARFloat *ap, int dimen, int rowa) {
 			*wbp = work;
 		}
 	}
-	return (ap);
+	return ap;
 }
 
-} // namespace Matrix
-
-
-} // namespace ARToolKitPlus
+} // namespace ARToolKitPlus::Matrix

@@ -116,7 +116,7 @@ AR_EXPORT int free(ARMat *m);
  * @return 0 on success
  * @pre dest->row == source->row && dest->clm == source->clm
  */
-AR_EXPORT int dup(ARMat *dest, ARMat *source);
+AR_EXPORT int dup(const ARMat *dest, const ARMat *source);
 
 /**
  * @brief Allocates and duplicates a matrix
@@ -127,7 +127,7 @@ AR_EXPORT int dup(ARMat *dest, ARMat *source);
  * @param source Pointer to the source matrix to duplicate
  * @return Pointer to the newly allocated duplicate matrix, or NULL if allocation fails
  */
-AR_EXPORT ARMat *allocDup(ARMat *source);
+AR_EXPORT ARMat *allocDup(const ARMat *source);
 
 /**
  * @brief Multiplies two matrices
@@ -142,7 +142,7 @@ AR_EXPORT ARMat *allocDup(ARMat *source);
  * @pre a->clm == b->row (inner dimensions must match)
  * @pre dest->row == a->row && dest->clm == b->clm (result dimensions must match)
  */
-AR_EXPORT int mul(ARMat *dest, ARMat *a, ARMat *b);
+AR_EXPORT int mul(const ARMat *dest, const ARMat *a, const ARMat *b);
 
 /**
  * @brief Inverts a matrix in-place
@@ -155,7 +155,7 @@ AR_EXPORT int mul(ARMat *dest, ARMat *a, ARMat *b);
  * @return 0 on success, -1 if the matrix is singular or cannot be inverted
  * @pre m->row == m->clm (matrix must be square)
  */
-AR_EXPORT int selfInv(ARMat *m);
+AR_EXPORT int selfInv(const ARMat *m);
 
 } // namespace Matrix
 
