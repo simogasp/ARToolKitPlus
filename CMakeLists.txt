@@ -25,18 +25,42 @@ option(ARTK_BUILD_DOCS "Build documentation (requires Doxygen)" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ARTK_ENABLE_WARNINGS_AS_ERRORS "Enable warnings as errors" OFF)
 option(ARTK_INSTALL "Install ARToolKitPlus library" ${ARTK_INSTALL_DEFAULT})
+option(ARTK_BUILD_TESTS "Build unit tests" ${ARTK_IS_MAIN_PROJECT})
+option(ARTK_BUILD_WITH_COVERAGE "Build with code coverage (only for Debug builds with GCC or Clang)" OFF)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
+endif()
+
+# coverage is only supported for Debug and RelWithDebInfo builds with GCC or Clang
+if(ARTK_BUILD_WITH_COVERAGE)
+    if(NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU"))
+        message(WARNING "Code coverage is only supported with GCC or Clang. Disabling ARTK_BUILD_WITH_COVERAGE.")
+        set(ARTK_BUILD_WITH_COVERAGE OFF)
+    elseif(NOT (CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo"))
+        message(WARNING "Code coverage is only supported for Debug or RelWithDebInfo builds. Disabling ARTK_BUILD_WITH_COVERAGE.")
+        set(ARTK_BUILD_WITH_COVERAGE OFF)
+    endif()
+endif()
 
 message(STATUS "ARToolKitPlus is main project: ${ARTK_IS_MAIN_PROJECT}")
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message(STATUS "ARToolKitPlus version: ${PROJECT_VERSION}")
 message(STATUS "Build shared libraries: ${BUILD_SHARED_LIBS}")
 message(STATUS "Build examples: ${ARTK_BUILD_EXAMPLES}")
 message(STATUS "Treat warnings as errors: ${ARTK_ENABLE_WARNINGS_AS_ERRORS}")
 message(STATUS "Install the library: ${ARTK_INSTALL}")
 message(STATUS "Build documentation: ${ARTK_BUILD_DOCS}")
+message(STATUS "Build tests: ${ARTK_BUILD_TESTS}")
+message(STATUS "Build with code coverage: ${ARTK_BUILD_WITH_COVERAGE}")
 
 # compile options for all targets depending on the compiler and the system
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     set(ARTK_COMPILE_OPTIONS "-Wall;-Wextra;-pedantic;-Wno-comment;-Wshadow;-Wnon-virtual-dtor;-Wpedantic;-Wconversion;-Wmisleading-indentation;-Wsign-conversion;-Wfloat-equal")
+    if(ARTK_BUILD_WITH_COVERAGE)
+        list(APPEND ARTK_COMPILE_OPTIONS "--coverage")
+    endif()
     if(ARTK_ENABLE_WARNINGS_AS_ERRORS)
         list(APPEND ARTK_COMPILE_OPTIONS "-Werror")
     endif()
@@ -57,7 +81,7 @@ if(MSVC)
 endif()
 
 
-set(ARTK_CXX_STANDARD 11)
+set(ARTK_CXX_STANDARD 20)
 if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD ${ARTK_CXX_STANDARD})
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -67,12 +91,6 @@ endif()
 set(ARTK_CXX_FEATURE cxx_std_${CMAKE_CXX_STANDARD})
 message(STATUS "Using C++ standard: ${CMAKE_CXX_STANDARD}")
 
-
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
-endif()
-message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 if(ARTK_USE_BOOST)
     add_definitions(-DAR_WITH_BOOST)
@@ -105,6 +123,9 @@ target_include_directories(ARToolKitPlus PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
   "$<INSTALL_INTERFACE:include/>")
 target_compile_features(ARToolKitPlus PUBLIC ${ARTK_CXX_FEATURE})
+if(ARTK_BUILD_WITH_COVERAGE)
+    target_link_options(ARToolKitPlus PUBLIC --coverage)
+endif()
 
 set_target_properties(ARToolKitPlus PROPERTIES
   DEBUG_POSTFIX "d"
@@ -118,22 +139,13 @@ if(ARTK_BUILD_EXAMPLES)
     add_subdirectory(bin)
 endif(ARTK_BUILD_EXAMPLES)
 
+if(ARTK_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif(ARTK_BUILD_TESTS)
+
 if(ARTK_BUILD_DOCS)
-    find_package(Doxygen)
-    if(DOXYGEN_FOUND)
-        set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/artoolkitplus.doxy)
-        set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile)
-
-        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-
-        add_custom_target(artoolkitplus_docs ALL
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-            COMMENT "Generating API documentation with Doxygen"
-            VERBATIM)
-    else()
-        message(STATUS "Doxygen not found, unable to build docs")
-    endif()
+    add_subdirectory(doc)
 endif(ARTK_BUILD_DOCS)
 
 
@@ -207,5 +219,4 @@ if (ARTK_INSTALL)
     if(ARTK_BUILD_EXAMPLES)
         install(DIRECTORY "${AR_SOURCE_DIR}/sample/data" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME})
     endif(ARTK_BUILD_EXAMPLES)
-endif ()
-
+endif()

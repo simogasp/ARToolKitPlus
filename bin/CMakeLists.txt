@@ -29,12 +29,9 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/test_config.h
     @ONLY
 )
-add_executable(test ${AR_SOURCE_DIR}/tools/test/main.cpp)
-target_include_directories(test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-list(APPEND ARTK_TEST_REGRESSION_TARGETS test)
-
-add_executable(test_version ${AR_SOURCE_DIR}/tools/test/test_version.cpp)
-list(APPEND ARTK_TEST_REGRESSION_TARGETS test_version)
+add_executable(test_detection ${AR_SOURCE_DIR}/tools/test/main.cpp)
+target_include_directories(test_detection PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+list(APPEND ARTK_TEST_REGRESSION_TARGETS test_detection)
 
 foreach(target ${ARTK_TEST_REGRESSION_TARGETS} ${ARTK_TOOLS_TARGETS})
     target_compile_options(${target} PRIVATE ${ARTK_COMPILE_OPTIONS})

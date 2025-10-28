@@ -23,6 +23,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Install gcovr
+      if: runner.os != 'Windows'
+      run: pip install gcovr
+
     # Linux - if you need some extra dependencies not provided by vcpkg, uncomment this section with the list of the
     # required packages. If they are 'heavy' consider caching using awalsh128/cache-apt-pkgs-action@latest
     # see example in .github/workflows/build_ci_linux_and_macos.yml
@@ -62,15 +66,31 @@ jobs:
         configurePreset: 'vcpkg-release'
         buildPreset: 'vcpkg-release'
         buildPresetAdditionalArgs: "['-t install']"
-#        testPreset: 'vcpkg-release'
+        testPreset: 'vcpkg-release'
 
     - name: Build (Debug)
       uses: lukka/run-cmake@v10
       with:
         configurePreset: 'vcpkg-debug'
+        configurePresetAdditionalArgs: "['-DARTK_BUILD_WITH_COVERAGE:BOOL=ON']"
         buildPreset: 'vcpkg-debug'
         buildPresetAdditionalArgs: "['-t install']"
-#        testPreset: 'vcpkg-debug'
+        testPreset: 'vcpkg-debug'
+
+    - name: Generate coverage report (Linux and macOS)
+      if: runner.os != 'Windows'
+      working-directory: ./build/vcpkg-debug
+      run: |
+        gcovr --root ../../src --print-summary --xml-pretty --xml coverage.xml .    
+
+    - name: Publish to codecov
+      uses: codecov/codecov-action@v5
+      with:
+        fail_ci_if_error: true # we weren't posting previously
+        flags: ${{ runner.os }}
+        name: ${{ runner.os }}-coverage
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./build/vcpkg-debug/coverage.xml
 
     # test the build as 3rd party library
     - name: Test as 3rd party library
