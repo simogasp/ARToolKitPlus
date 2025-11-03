@@ -26,7 +26,7 @@ skipComments(FILE* fp, char *word)
             if (word[0]=='#'){
                 // line is a comment, eat up all chars till the end of line
 
-                while( fscanf( fp, "%c", &dummyChar ) && dummyChar != '\n' )
+                while( fscanf( fp, "%c", &dummyChar ) == 1 && dummyChar != '\n' )
                     ;
             }else
                 return; // line did not start with a comment
