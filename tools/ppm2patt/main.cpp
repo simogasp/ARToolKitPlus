@@ -22,7 +22,7 @@ skipComments(FILE* fp, char *word)
     char dummyChar;
 
     while( true ){
-        if( fscanf(fp, "%s", word) ){
+        if( fscanf(fp, "%s", word) == 1 ){
             if (word[0]=='#'){
                 // line is a comment, eat up all chars till the end of line
 
