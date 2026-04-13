@@ -39,5 +39,8 @@ foreach(source_file ${ARTK_TEST_SOURCES})
     target_compile_definitions(${test_name} PRIVATE ${ARTK_COMPILE_DEFINITIONS})
     target_compile_options(${test_name} PRIVATE ${ARTK_COMPILE_OPTIONS})
 
-    gtest_discover_tests(${test_name})
+    gtest_discover_tests(${test_name}
+        DISCOVERY_MODE POST_BUILD
+        DISCOVERY_TIMEOUT 30
+    )
 endforeach()
