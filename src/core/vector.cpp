@@ -68,7 +68,8 @@ ARFloat household(ARVec *x) {
         if (x->v[0] < 0)
             s = -s;
         x->v[0] += s;
-        t = (ARFloat) 1 / (ARFloat) sqrt(x->v[0] * s);
+        const ARFloat product = x->v[0] * s;
+        t = ARFloat{1} / std::sqrt(product);
         for (i = 0; i < x->clm; i++) {
             x->v[i] *= t;
         }
