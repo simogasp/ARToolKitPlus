@@ -76,16 +76,15 @@ readPPM( const char *fileName, unsigned char **data, int *width, int *height )
     sscanf( word, "%d", &dummyInt );
     fgetc( fp ); // eat up newline
 
-    int chunkSize = (*width)*(*height)*3*sizeof( unsigned char );
+    const size_t chunkSize = static_cast<size_t>(*width) * static_cast<size_t>(*height) * 3u * sizeof( unsigned char );
     if( *data == NULL )
-        *data = new unsigned char[(*width)*(*height)*3];
+        *data = new unsigned char[chunkSize];
 
     // read actual image data
-    n = fread( *data, 1, chunkSize, fp );
+    const size_t bytesRead = fread( *data, 1, chunkSize, fp );
 
-    if( n != chunkSize ){
-        printf( "read %d bytes, expected %d bytes, file truncated?\n", n,
-chunkSize );
+    if( bytesRead != chunkSize ){
+        printf( "read %zu bytes, expected %zu bytes, file truncated?\n", bytesRead, chunkSize );
         return false;
     }
 
@@ -99,17 +98,18 @@ void
 rotate( unsigned char *data, int width, int height )
 {
     // rotate left
-    int i, j;
     unsigned char *tmp = new unsigned char[width*height*3];
 
-    for( i = 0; i < width; ++i )
-        for( j = 0; j < height; ++j ){
+    for( int i = 0; i < width; ++i )
+    {
+        for( int j = 0; j < height; ++j ){
             tmp[((width-i-1)*height+j)*3]   = data[(j*width+i)*3];
             tmp[((width-i-1)*height+j)*3+1] = data[(j*width+i)*3+1];
             tmp[((width-i-1)*height+j)*3+2] = data[(j*width+i)*3+2];
         }
-
-    memcpy(data, tmp, width*height*3*sizeof(unsigned char));
+    }
+    const size_t chunkSize = static_cast<size_t>(width) * static_cast<size_t>(height) * 3u * sizeof( unsigned char );
+    memcpy(data, tmp, chunkSize);
 
     delete[] tmp;
 }
@@ -119,20 +119,17 @@ bool
 writeMarkerFile(const char *fileName, unsigned char *data, int width, int
 height)
 {
-    FILE *fp;
-    int i, j, y, x, tmp;
-    unsigned char *src;
-
-    fp = fopen( fileName, "w" );
+    FILE *fp = fopen( fileName, "w" );
     if( fp == NULL ) return false;
 
-    src = new unsigned char[width*height*3];
-    memcpy( src, data, width*height*3*sizeof(unsigned char));
+    const size_t chunkSize = static_cast<size_t>(width) * static_cast<size_t>(height) * 3u * sizeof( unsigned char );
+    unsigned char *src = new unsigned char[chunkSize];
+    memcpy( src, data, chunkSize );
 
-    for( i = 0; i < 4; i++ ) {
-        for( j = 0; j < 3; j++ ) {
-            for( y = 0; y < height; y++ ) {
-                for( x = 0; x < width; x++ ) {
+    for( int i = 0; i < 4; i++ ) {
+        for( int j = 0; j < 3; j++ ) {
+            for( int y = 0; y < height; y++ ) {
+                for( int x = 0; x < width; x++ ) {
                     fprintf( fp, "%4d", src[(y*width+x)*3+j] );
                 }
                 fprintf(fp, "\n");
@@ -144,13 +141,13 @@ height)
         rotate( src, width, height );
 
         // swap width and height
-        tmp = width;
+        int tmp = width;
         width = height;
         height = tmp;
     }
 
     fclose( fp );
-    delete src;
+    delete[] src;
 
     return true;
 }
@@ -159,13 +156,12 @@ height)
 void
 convert2BGR( unsigned char *data, int width, int height )
 {
-    int i, j;
     unsigned char tmp;
 
     // just swap R and B
 
-    for( i = 0; i < width; ++i )
-        for( j = 0; j < height; ++j ){
+    for( int i = 0; i < width; ++i )
+        for( int j = 0; j < height; ++j ){
             tmp = data[(j*width+i)*3];
             data[(j*width+i)*3] = data[(j*width+i)*3+2];
             data[(j*width+i)*3+2] = tmp;
