@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <cmath>
 #include <clocale>
+#include <limits>
 
 #include <ARToolKitPlus/Tracker.h>
 #include <ARToolKitPlus/ar.h>
@@ -359,8 +360,12 @@ int Tracker::arGetPatt(const uint8_t *image, int *x_coord, int *y_coord, int *ve
 		int jy, ix;
 		uint8_t col8;
 
-		const std::size_t patternBytes = static_cast<std::size_t>(PATTERN_HEIGHT) * PATTERN_WIDTH * 3 * sizeof(uint32_t);
-		put_zero((uint8_t *) ext_pat2, patternBytes);
+		const std::size_t patternBytes = static_cast<std::size_t>(PATTERN_HEIGHT) * static_cast<std::size_t>(PATTERN_WIDTH) * 3u * sizeof(uint32_t);
+		if (patternBytes > static_cast<std::size_t>(std::numeric_limits<int>::max())) {
+			delete[] ext_pat2;
+			return (-1);
+		}
+		put_zero((uint8_t *) ext_pat2, static_cast<int>(patternBytes));
 
 		for (j = 0; j < ydiv2; j++) {
 			//yw = (ARFloat)(102.5) + (ARFloat)(5.0) * (ARFloat)(j+0.5) / (ARFloat)ydiv2;
