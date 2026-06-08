@@ -76,12 +76,12 @@ readPPM( const char *fileName, unsigned char **data, int *width, int *height )
     sscanf( word, "%d", &dummyInt );
     fgetc( fp ); // eat up newline
 
-    size_t chunkSize = static_cast<size_t>(*width) * static_cast<size_t>(*height) * 3u * sizeof( unsigned char );
+    const size_t chunkSize = static_cast<size_t>(*width) * static_cast<size_t>(*height) * 3u * sizeof( unsigned char );
     if( *data == NULL )
         *data = new unsigned char[chunkSize];
 
     // read actual image data
-    size_t bytesRead = fread( *data, 1, chunkSize, fp );
+    const size_t bytesRead = fread( *data, 1, chunkSize, fp );
 
     if( bytesRead != chunkSize ){
         printf( "read %zu bytes, expected %zu bytes, file truncated?\n", bytesRead,
