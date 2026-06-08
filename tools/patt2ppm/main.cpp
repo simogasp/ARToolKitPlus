@@ -36,14 +36,14 @@ static int parseDimension(const char* str) {
 }
 
 
-char
+// Returns the first non-space character, or EOF on end-of-file/error.
+int
 skipSpaces(FILE* fp)
 {
-	char ch = ' ';
-
-	while( ch==' ' && !feof(fp))
+	int ch;
+	do {
 		ch = fgetc(fp);
-
+	} while (ch == ' ' && ch != EOF);
 	return ch;
 }
 
@@ -51,18 +51,17 @@ skipSpaces(FILE* fp)
 bool
 readNumber(FILE* fp, char* buffer, int maxLen)
 {
-	char ch = 0;
-	int i=0;
+	int ch;
+	int i = 0;
 
 	do {
 		ch = fgetc(fp);
-		if(ch>='0' && ch<='9')
-			buffer[i++] = ch;
-	} while(!feof(fp) && i<maxLen-1 && ch!=' ');
+		if (ch >= '0' && ch <= '9')
+			buffer[i++] = static_cast<char>(ch);
+	} while (ch != EOF && i < maxLen - 1 && ch != ' ');
 
-
-	buffer[i++] = 0;
-	return i<maxLen && !feof(fp);
+	buffer[i] = '\0';
+	return i > 0 && ch != EOF;
 }
 
 
@@ -116,7 +115,12 @@ readMarkerFile(const char* nFileName, int nMarkerWidth, int nMarkerHeight)
 		{
 			for(int x=0; x<nMarkerWidth; ++x)
 			{
-				str[0] = skipSpaces(fp);
+				const int firstChar = skipSpaces(fp);
+				if (firstChar == EOF) {
+					fclose(fp);
+					return pixels24;
+				}
+				str[0] = static_cast<char>(firstChar);
 				readNumber(fp, str+1, strMax);
 				int value = atoi(str);
 				const std::size_t offset = 3 * (static_cast<std::size_t>(x) + static_cast<std::size_t>(y) * nMarkerWidth) + channel;
