@@ -20,6 +20,7 @@
  */
 
 #include <ARToolKitPlus/Tracker.h>
+#include <cstddef>
 #include <iostream>
 #include <cassert>
 
@@ -37,10 +38,10 @@ Tracker::Tracker(int imWidth, int imHeight, int maxImagePatterns, int pattWidth,
     PATTERN_WIDTH(pattWidth), PATTERN_HEIGHT(pattHeight), PATTERN_SAMPLE_NUM(pattSamples),
             MAX_LOAD_PATTERNS(maxLoadPatterns), MAX_IMAGE_PATTERNS(maxImagePatterns),
             WORK_SIZE(1024 * MAX_IMAGE_PATTERNS), sprev_info(2, vector<arPrevInfo> (MAX_IMAGE_PATTERNS)), patf(0),
-            pat(MAX_LOAD_PATTERNS, vector<vector<int> > (4, vector<int> (PATTERN_HEIGHT * PATTERN_WIDTH * 3))),
-            patBW(MAX_LOAD_PATTERNS, vector<vector<int> > (4, vector<int> (PATTERN_HEIGHT * PATTERN_WIDTH * 3))),
-            evec(EVEC_MAX, vector<ARFloat> (PATTERN_HEIGHT * PATTERN_WIDTH * 3)),
-            evecBW(EVEC_MAX, vector<ARFloat> (PATTERN_HEIGHT * PATTERN_WIDTH * 3)) {
+            pat(MAX_LOAD_PATTERNS, vector<vector<int> > (4, vector<int> (static_cast<std::size_t>(PATTERN_HEIGHT) * PATTERN_WIDTH * 3))),
+            patBW(MAX_LOAD_PATTERNS, vector<vector<int> > (4, vector<int> (static_cast<std::size_t>(PATTERN_HEIGHT) * PATTERN_WIDTH * 3))),
+            evec(EVEC_MAX, vector<ARFloat> (static_cast<std::size_t>(PATTERN_HEIGHT) * PATTERN_WIDTH * 3)),
+            evecBW(EVEC_MAX, vector<ARFloat> (static_cast<std::size_t>(PATTERN_HEIGHT) * PATTERN_WIDTH * 3)) {
     screenWidth = imWidth;
     screenHeight = imHeight;
 

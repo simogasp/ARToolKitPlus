@@ -19,6 +19,7 @@
  */
 
 #include <cstdio>
+#include <cstddef>
 #include <cmath>
 #include <cassert>
 #include <cstring>
@@ -102,14 +103,15 @@ void Tracker::buildUndistO2ITable(Camera* pCam) {
     if (undistO2ITable)
         delete[] undistO2ITable;
 
-    undistO2ITable = new unsigned int[arImXsize * arImYsize];
+    const std::size_t tableSize = static_cast<std::size_t>(arImXsize) * static_cast<std::size_t>(arImYsize);
+    undistO2ITable = new unsigned int[tableSize];
 
     if (loadCachedUndist) {
         if (FILE* fp = fopen(cachename, "rb")) {
-            size_t numBytes = fread(undistO2ITable, 1, arImXsize * arImYsize * sizeof(unsigned int), fp);
+            const std::size_t numBytes = fread(undistO2ITable, 1, tableSize * sizeof(unsigned int), fp);
             fclose(fp);
 
-            if (numBytes == arImXsize * arImYsize * sizeof(unsigned int))
+            if (numBytes == tableSize * sizeof(unsigned int))
                 loaded = true;
         }
     }
@@ -126,7 +128,7 @@ void Tracker::buildUndistO2ITable(Camera* pCam) {
 
         if (loadCachedUndist)
             if (FILE* fp = fopen(cachename, "wb")) {
-                fwrite(undistO2ITable, 1, arImXsize * arImYsize * sizeof(unsigned int), fp);
+                fwrite(undistO2ITable, 1, tableSize * sizeof(unsigned int), fp);
                 fclose(fp);
             }
     }
